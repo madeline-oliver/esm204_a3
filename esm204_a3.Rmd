@@ -70,19 +70,23 @@ agg_y1 <- 15.8 # same as high income
 agg_m1 <- -0.0000273
 
 agg_y2 <- 14.6
-agg_m2 <- -1.93
+agg_m2 <- -.0000193
 
-demand_agg1 <- function(q) {p = agg_y1-(agg_m1*q)}
-demand_agg2 <- function(q) {p = agg_y2 - (agg_m2*q)}
+demand_agg1 <- function(q) {p = agg_y1+(agg_m1*q)} # same as high income D
+demand_agg2 <- function(q) {p = agg_y2 + (agg_m2*q)}
 
 
 
 
 # Supply functions
+# Initial supply function (without policy)
 supply_m1 <- 4.99598E-06 
 supply1 <- function(q) {p = supply_m1*q}
 
+
+
 za <- 0:1000000
+z <- 0:70
 ```
 
 
@@ -95,7 +99,7 @@ The supply function is p = 4.99598*e-06q
 ggplot()+
   stat_function(aes(za, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
   stat_function(aes(za, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
-  stat_function(aes(za, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
+  stat_function(aes(z, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
   scale_color_manual(values = c("darkgreen", "darkblue", "darkred"))+
   labs(x = "Gallons",
        y = "Price (USD/Gallon)",
@@ -107,8 +111,9 @@ ggplot()+
         legend.background = element_rect(fill = "gray85")) +
   scale_y_continuous(limits = c(0, 17),
                      expand = c(0, 0))+
-  scale_x_continuous(limits = c(0, 600000),
-                     expand = c(0, 0))
+  scale_x_continuous(limits = c(0, 680000),
+                     expand = c(0, 0)) + 
+  
 
 ```
 
