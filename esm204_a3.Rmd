@@ -58,27 +58,45 @@ high_m <- high_lm$coefficients[2]
 # Creating demand functions using lm outputs
 
 # Demand Functions for High and Low Income Consumers p(q)
-low_eq <- function(q) {p = low_y + low_m*q}
-high_eq <- function(q) {p = high_y + high_m*q}
-z <- 0:150
+low_eq <- function(q) {p = low_y + (low_m*q)}
+high_eq <- function(q) {p = high_y + (high_m*q)}
 
 # Demand Functions q(p)
 low_eq_pq <- function(p) {q = (p-low_y)/low_m}
 high_eq_pq <- function(p) {q = (p-high_y)/high_m}
-demand_agg <- function(p) {q = ((p-low_y)/low_m) + ((p-high_y)/high_m)}
+
+# Aggregate demand functions
+agg_y1 <- 15.8 # same as high income
+agg_m1 <- -0.0000273
+
+agg_y2 <- 14.6
+agg_m2 <- -1.93
+
+demand_agg1 <- function(q) {p = agg_y1-(agg_m1*q)}
+demand_agg2 <- function(q) {p = agg_y2 - (agg_m2*q)}
 
 
 
-za <- 0:250
+
+# Supply functions
+supply_m1 <- 4.99598E-06 
+supply1 <- function(q) {p = supply_m1*q}
+
+za <- 0:1000000
 ```
 
+
+
+Equilibrium Q = 600483.228, p = 3, found by plugging in eq price ($3) into the aggregate demand curve, which is the same as the high income demand curve. 
+
+The supply function is p = 4.99598*e-06q
 
 ```{r}
 ggplot()+
   stat_function(aes(za, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
   stat_function(aes(za, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
-  stat_function(aes(za, color = "Aggregate"), fun = demand_agg, size = 1, show.legend = TRUE)+
-  scale_color_manual(values = c("darkred", "darkblue", "darkgreen"))+
+  stat_function(aes(za, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
+  scale_color_manual(values = c("darkgreen", "darkblue", "darkred"))+
   labs(x = "Gallons",
        y = "Price (USD/Gallon)",
        title = "Figure 1: Demand for Gasoline",
@@ -86,22 +104,38 @@ ggplot()+
   theme_classic()+
   theme(legend.position = c(0.95, 0.95),
         legend.justification = c("right", "top"),
-        legend.background = element_rect(fill = "gray85"))
+        legend.background = element_rect(fill = "gray85")) +
+  scale_y_continuous(limits = c(0, 17),
+                     expand = c(0, 0))+
+  scale_x_continuous(limits = c(0, 600000),
+                     expand = c(0, 0))
 
+```
 
-low_reg <- raw_data %>% 
-  ggplot(aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) +
-  geom_smooth(method = lm, se = FALSE, size = 0.5, color = "blue") +
-  geom_smooth(aes(x = Q_High_Gallons_per_Day, y = Price_Dollars),
-              method = lm, se = FALSE, size = 0.5, color = "red") +
-  theme_bw() +
-  geom_point(data = gas_comb, aes(x = gal_per_day, y = Price_Dollars, color = Type )) +
-  scale_x_continuous(expand = c(0,0)) +
-  labs(
-    x = "Gallons per Day",
-    y = "Price ($)"
-  )
-
+```{r}
+ggplot(data = raw_data, 
+      aes(y = price_dollars,
+          x = q_high_gallons)) +
+  geom_blank(mapping = NULL) +
+  geom_abline(intercept = high_y, 
+              slope = high_m, 
+              color = "black") + 
+  geom_abline(intercept = low_y, 
+              slope = low_m, 
+              color = "red") +
+  geom_abline(intercept = agg_y1, 
+              slope = agg_m1, 
+              color = "blue") +
+  geom_abline(intercept = agg_y2, 
+              slope = agg_m2, 
+              color = "green") + 
+  scale_y_continuous(limits = c(0, 17),
+                     expand = c(0, 0))+
+  scale_x_continuous(limits = c(0, 600000),
+                     expand = c(0, 0)) +
+  geom_abline(intercept = high_y, 
+              slope = high_m, 
+              color = "brown")
 
 ```
 
