@@ -1,0 +1,109 @@
+---
+title: 'ESM 204 Homework #3'
+author: "Madeline Oliver"
+date: "5/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+# Attach necessary packaegs
+library(tidyverse)
+library(ggplot2)
+library(wesanderson)
+library(janitor)
+library(broom)
+library(nlstools)
+```
+
+
+```{r}
+# Read in data
+raw_data <- read_csv("hw3data.csv") %>%
+  clean_names()
+```
+```{r}
+ggplot(data = raw_data, 
+       aes(x = q_low_gallons,
+            y = price_dollars)) +
+  geom_point()
+
+ggplot(data = raw_data, 
+       aes(x = q_high_gallons,
+            y = price_dollars)) +
+  geom_point()
+
+# Create functions to estimate abatement costs
+low_lm <- lm(price_dollars ~ q_low_gallons, data = raw_data)
+high_lm <- lm(price_dollars ~ q_high_gallons, data = raw_data)
+
+summary(low_lm)
+summary(high_lm)
+```
+```{r}
+# Naming the y-intercept(y) and slope (m)
+low_y <- low_lm$coefficients[1]
+low_m <- low_lm$coefficients[2]
+high_y <- high_lm$coefficients[1]
+high_m <- high_lm$coefficients[2]
+
+```
+
+
+```{r}
+# Creating demand functions using lm outputs
+
+# Demand Functions for High and Low Income Consumers p(q)
+low_eq <- function(q) {p = low_y + low_m*q}
+high_eq <- function(q) {p = high_y + high_m*q}
+z <- 0:150
+
+# Demand Functions q(p)
+low_eq_pq <- function(p) {q = (p-low_y)/low_m}
+high_eq_pq <- function(p) {q = (p-high_y)/high_m}
+demand_agg <- function(p) {q = ((p-low_y)/low_m) + ((p-high_y)/high_m)}
+
+
+
+za <- 0:250
+```
+
+
+```{r}
+ggplot()+
+  stat_function(aes(za, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
+  stat_function(aes(za, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
+  stat_function(aes(za, color = "Aggregate"), fun = demand_agg, size = 1, show.legend = TRUE)+
+  scale_color_manual(values = c("darkred", "darkblue", "darkgreen"))+
+  labs(x = "Gallons",
+       y = "Price (USD/Gallon)",
+       title = "Figure 1: Demand for Gasoline",
+       color = "Income Level")+
+  theme_classic()+
+  theme(legend.position = c(0.95, 0.95),
+        legend.justification = c("right", "top"),
+        legend.background = element_rect(fill = "gray85"))
+
+
+low_reg <- raw_data %>% 
+  ggplot(aes(x = Q_Low_Gallons_per_Day, y = Price_Dollars)) +
+  geom_smooth(method = lm, se = FALSE, size = 0.5, color = "blue") +
+  geom_smooth(aes(x = Q_High_Gallons_per_Day, y = Price_Dollars),
+              method = lm, se = FALSE, size = 0.5, color = "red") +
+  theme_bw() +
+  geom_point(data = gas_comb, aes(x = gal_per_day, y = Price_Dollars, color = Type )) +
+  scale_x_continuous(expand = c(0,0)) +
+  labs(
+    x = "Gallons per Day",
+    y = "Price ($)"
+  )
+
+
+```
+
+
+
