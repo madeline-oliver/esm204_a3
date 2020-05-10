@@ -76,71 +76,126 @@ demand_agg1 <- function(q) {p = agg_y1+(agg_m1*q)} # same as high income D
 demand_agg2 <- function(q) {p = agg_y2 + (agg_m2*q)}
 
 
-
-
 # Supply functions
 # Initial supply function (without policy)
 supply_m1 <- 4.99598E-06 
 supply1 <- function(q) {p = supply_m1*q}
 
 
+# Externalities!
+mecl <- function(q) {p = 1.5}
+mecg <- function(q) {p = .5}
+msc <- function(q) {p = 0.000004995976338*q + 2}
 
-za <- 0:1000000
-z <- 0:70
+
+
+z1 <- 0:1500000
+z2 <- 0:2000000
+z3 <- 0:70
 ```
 
+Low Income:
+y = 11.7 - 0.0000661x
+
+High Income: 
+y = 15.8 - 0.0000273x
+
+
+Agg Demand curve
+p = 14.601606 -0.00001932044968q
+
+(3-15.8)/-0.0000273 = x
 
 
 Equilibrium Q = 600483.228, p = 3, found by plugging in eq price ($3) into the aggregate demand curve, which is the same as the high income demand curve. 
 
 The supply function is p = 4.99598*e-06q
 
+With tax, supply function is: p = 1 + 4.99598*e-06q
+
+New quantity found by:
+14.601606 -0.00001932044968q = 1 + 4.99598*e-06q
+14.601606-1 = 4.99598*e-06q + 0.00001932044968q
+q = 
+
+
 ```{r}
+
 ggplot()+
-  stat_function(aes(za, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
-  stat_function(aes(za, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
-  stat_function(aes(z, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
-  scale_color_manual(values = c("darkgreen", "darkblue", "darkred"))+
+  stat_function(aes(z1, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
+  stat_function(aes(z2, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
+  stat_function(aes(z3, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
+  stat_function(aes(z3, color = "Marginal Cost of Production"), fun = supply1, size = 1, show.legend = TRUE)+
+  stat_function(aes(z3, color = "Marginal Social Cost"), fun = msc, size = 1, show.legend = TRUE)+
+  scale_color_manual(values = c("#01665e", "#80cdc1", "#66bd63", "#f46d43", "#d73027"))+
   labs(x = "Gallons",
        y = "Price (USD/Gallon)",
        title = "Figure 1: Demand for Gasoline",
        color = "Income Level")+
-  theme_classic()+
+  theme_light()+
+  theme(text=element_text(size= 12,family = "Times"),
+        plot.title = element_text(family = "Times", face="bold",size=12))+
   theme(legend.position = c(0.95, 0.95),
         legend.justification = c("right", "top"),
-        legend.background = element_rect(fill = "gray85")) +
+        legend.background = element_rect(fill = "white")) +
   scale_y_continuous(limits = c(0, 17),
                      expand = c(0, 0))+
-  scale_x_continuous(limits = c(0, 680000),
-                     expand = c(0, 0)) + 
-  
+  scale_x_continuous(limits = c(0, 690000),
+                     expand = c(0, 0))
+
 
 ```
 
-```{r}
-ggplot(data = raw_data, 
-      aes(y = price_dollars,
-          x = q_high_gallons)) +
-  geom_blank(mapping = NULL) +
-  geom_abline(intercept = high_y, 
-              slope = high_m, 
-              color = "black") + 
-  geom_abline(intercept = low_y, 
-              slope = low_m, 
-              color = "red") +
-  geom_abline(intercept = agg_y1, 
-              slope = agg_m1, 
-              color = "blue") +
-  geom_abline(intercept = agg_y2, 
-              slope = agg_m2, 
-              color = "green") + 
-  scale_y_continuous(limits = c(0, 17),
-                     expand = c(0, 0))+
-  scale_x_continuous(limits = c(0, 600000),
-                     expand = c(0, 0)) +
-  geom_abline(intercept = high_y, 
-              slope = high_m, 
-              color = "brown")
+
+
+
+
+```{r, include = FALSE}
+# ggplot()+
+#   stat_function(aes(z1, color = "Low Income"), fun = low_eq, size = 1, show.legend = TRUE)+
+#   stat_function(aes(z2, color = "High Income"), fun = high_eq, size = 1, show.legend = TRUE)+
+#   stat_function(aes(z3, color = "Aggregate"), fun = demand_agg2, size = 1, show.legend = TRUE)+
+#   scale_color_manual(values = c("darkgreen", "darkblue", "darkred"))+
+#   labs(x = "Gallons",
+#        y = "Price (USD/Gallon)",
+#        title = "Figure 1: Demand for Gasoline",
+#        color = "Income Level")+
+#   theme_classic()+
+#   theme(legend.position = c(0.95, 0.95),
+#         legend.justification = c("right", "top"),
+#         legend.background = element_rect(fill = "gray85")) +
+#   scale_y_continuous(limits = c(0, 17),
+#                      expand = c(0, 0))+
+#   scale_x_continuous(limits = c(0, 690000),
+#                      expand = c(0, 0))
+#   
+
+```
+
+```{r, include = FALSE}
+# ggplot(data = raw_data, 
+#       aes(y = price_dollars,
+#           x = q_high_gallons)) +
+#   geom_blank(mapping = NULL) +
+#   geom_abline(intercept = high_y, 
+#               slope = high_m, 
+#               color = "black") + 
+#   geom_abline(intercept = low_y, 
+#               slope = low_m, 
+#               color = "red") +
+#   geom_abline(intercept = agg_y1, 
+#               slope = agg_m1, 
+#               color = "blue") +
+#   geom_abline(intercept = agg_y2, 
+#               slope = agg_m2, 
+#               color = "green") + 
+#   scale_y_continuous(limits = c(0, 17),
+#                      expand = c(0, 0))+
+#   scale_x_continuous(limits = c(0, 600000),
+#                      expand = c(0, 0)) +
+#   geom_abline(intercept = high_y, 
+#               slope = high_m, 
+#               color = "brown")
 
 ```
 
